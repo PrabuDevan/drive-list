@@ -4,6 +4,7 @@ import './registerServiceWorker'
 import store from './store'
 import vuetify from './plugins/vuetify';
 import LoadScript from 'vue-plugin-load-script';
+import axios from 'axios';
 
 Vue.use(LoadScript);
 if (!window.gapi) {
@@ -18,15 +19,22 @@ if (!window.gapi) {
       }).then(() => {
         store.state.googleAuth = gapi.auth2.getAuthInstance();
         store.state.accessToken = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token;
-        console.log(store.state.accessToken);
         if (store.state.googleAuth.isSignedIn.get()) {
-          gapi.client.drive.files.list({
-            pageSize: 10,
-            fields:
-              "nextPageToken, files(id, name, shared, size, createdTime, modifiedTime)",
+          // gapi.client.drive.files.list({
+          //   pageSize: 10,
+          //   fields:
+          //     "nextPageToken, files(id, name, shared, size, createdTime, modifiedTime)",
+          // }).then(res => {
+          //   store.state.files = res.result.files;
+          //   store.state.nextPageToken = res.result.nextPageToken;
+          // });
+          axios.post("http://localhost:8000/drive/first_page/", {
+            access_token: store.state.accessToken
           }).then(res => {
-            store.state.files = res.result.files;
-            store.state.nextPageToken = res.result.nextPageToken;
+            if (res.status === 200) {
+              store.state.files = res.data.files;
+              store.state.nextPageToken = res.data.nextPageToken;
+            }
           });
         }
       })

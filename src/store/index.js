@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import axios from 'axios'
 
 Vue.use(Vuex)
 
@@ -21,9 +22,8 @@ export default new Vuex.Store({
       state.nextPageToken = token;
     },
     GO_TO_INITIAL_STATE(state) {
-      state.googleAuth = undefined;
-      state.files = undefined;
-      state.nextPageToken = undefined;
+      state.accessToken = undefined;
+      window.location.reload();
     }
   },
   actions: {
@@ -34,14 +34,23 @@ export default new Vuex.Store({
       });
     },
     VIEW_MORE({ commit, state }) {
-      window.gapi.client.drive.files.list({
+      // window.gapi.client.drive.files.list({
+      //   pageToken: state.nextPageToken,
+      //   pageSize: 10,
+      //   fields:
+      //     "nextPageToken, files(id, name, shared, size, createdTime, modifiedTime)"
+      // }).then(res => {
+      //   commit("UPDATE_FILES_LIST", [...state.files, ...res.result.files]);
+      //   commit("UPDATE_NEXT_PAGE_TOKEN", res.result.nextPageToken);
+      // });
+      axios.post("http://localhost:8000/drive/next_page/", {
         pageToken: state.nextPageToken,
-        pageSize: 10,
-        fields:
-          "nextPageToken, files(id, name, shared, size, createdTime, modifiedTime)"
+        access_token: state.accessToken
       }).then(res => {
-        commit("UPDATE_FILES_LIST", [...state.files, ...res.result.files]);
-        commit("UPDATE_NEXT_PAGE_TOKEN", res.result.nextPageToken);
+        if (res.status === 200) {
+          commit("UPDATE_FILES_LIST", [...state.files, ...res.data.files]);
+          commit("UPDATE_NEXT_PAGE_TOKEN", res.data.nextPageToken);
+        }
       });
     }
   },
