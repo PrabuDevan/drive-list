@@ -6,6 +6,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     googleAuth: undefined,
+    accessToken: undefined,
     files: undefined,
     nextPageToken: undefined
   },
