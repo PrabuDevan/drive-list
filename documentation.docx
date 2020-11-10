@@ -1,0 +1,23 @@
+﻿App Flow Documentation
+
+1. After website loads , the user clicks on google login button. (if network is slow please wait untill the google script loads)
+
+2. It will open a popup for google signin and it requests access for google drive metadata
+
+3. After we got the access, the access_token will be saved in the vuex store(state management in vue)
+
+4. access_token will be send to the backend for getting google drive files (first 10 files)
+
+5. files will be displayed in table
+
+6. view_more button will get another 10 files from the google drive
+
+Running the app locally
+
+1. Clone the project
+
+2. npm i  -  installs the required dependencies
+
+3. npm run serve  -  starts the project locally
+
+Note: Ensure port 8080 is not used by any other application
